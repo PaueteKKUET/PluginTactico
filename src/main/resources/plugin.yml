@@ -1,0 +1,12 @@
+name: PluginTactico
+version: '${project.version}'
+main: com.fadedbytes.PluginTactico.PluginTactico
+api-version: 1.18
+authors: [ PaueteKKUET ]
+commands:
+  uwu:
+    description: UwU
+    usage: /<command>
+  handtool:
+    description: Instamina bloques :D
+    usage: /<command>
