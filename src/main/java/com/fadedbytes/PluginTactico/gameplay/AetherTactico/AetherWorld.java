@@ -18,7 +18,7 @@ import java.util.Random;
 
 public class AetherWorld {
 
-    public static String WORLD_NAME = "TEST_14";
+    public static String WORLD_NAME = "TEST_20";
 
     public AetherWorld() {
         Bukkit.getServer().getWorlds().add(getAetherWorld());
@@ -55,48 +55,6 @@ public class AetherWorld {
     }
 
     private static ChunkGenerator getChunkGenerator() {
-        ChunkGenerator generator = new ChunkGenerator() {
-            @Override
-            public boolean shouldGenerateNoise() {
-                return true;
-            }
-
-            @Override
-            public boolean shouldGenerateSurface() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldGenerateBedrock() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldGenerateCaves() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldGenerateDecorations() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldGenerateMobs() {
-                return false;
-            }
-
-            @Override
-            public boolean shouldGenerateStructures() {
-                return true;
-            }
-
-            @Override
-            public void generateNoise(@NotNull WorldInfo worldInfo, @NotNull Random random, int x, int z, @NotNull ChunkGenerator.ChunkData chunkData) {
-                chunkData.setRegion(0, chunkData.getMinHeight(), 0, 16, (int) (Math.random() * 128) + 128, 16, Material.DEAD_BUBBLE_CORAL_BLOCK);
-
-            }
-        };
 
         return generator;
     }
