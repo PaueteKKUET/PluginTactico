@@ -1,31 +1,32 @@
 package com.fadedbytes.PluginTactico.gameplay.AetherTactico;
 
 import com.fadedbytes.PluginTactico.Tags.TagTactica;
-import com.fadedbytes.PluginTactico.util.BlockUtil;
 import com.fadedbytes.PluginTactico.util.playerutils.PlayerUtils;
-import net.minecraft.world.level.block.BlockStainedGlass;
+import com.fadedbytes.PluginTactico.util.worldutils.BlockUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.MultipleFacing;
-import org.bukkit.craftbukkit.v1_18_R2.block.impl.CraftStainedGlassPane;
-import org.bukkit.entity.Player;
+import org.bukkit.block.EndGateway;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.util.Vector;
+
+import static com.fadedbytes.PluginTactico.gameplay.AetherTactico.Aether.AETHER;
 
 public class AetherPortalCreator implements Listener {
 
     private static final int MAX_CHECKING_DISTANCE = 8;
-    private static final Material PORTAL_BLOCK = Material.GOLD_BLOCK;
 
     AetherPortalCreator() {}
 
     @EventHandler
     public static void onPlayerPlacingWater(PlayerBucketEmptyEvent event) {
+
+        if (!event.getPlayer().getWorld().getName().equals("world")) return;
 
         if (!event.getBlockClicked().getType().equals(Material.GLOWSTONE)) {
             Block block = event.getBlock();
@@ -127,12 +128,77 @@ public class AetherPortalCreator implements Listener {
         if (!BlockUtil.isFullOfAir(loc1, loc2)) {
             return false;
         }
-        //BlockUtil.fill(loc1, loc2, PORTAL_BLOCK);
+        Location exitLocation = getNearestSpawn(loc1.getBlockX(), loc1.getBlockZ());
         for (Location block : BlockUtil.selectArea(loc1, loc2)) {
-            block.getBlock().setType(PORTAL_BLOCK);
-            PlayerUtils.getPlayer().byName("PaueteKKUET").sendMessage(block.getBlock().getState().getClass().getSimpleName());
+            setPortalBlock(block.getBlock(), exitLocation);
         }
         return true;
+    }
+
+
+    private static final int RADIUS = 16;
+    public static Location getNearestSpawn(int x, int z) {
+        Location exitLocation = null;
+        int by = AETHER.getHighestBlockAt(x, z).getY();
+
+        if (by > AetherAmbients.MIN_AETHER_BLOCK) {
+            exitLocation = new Location(AETHER, x, by, z);
+            return exitLocation;
+        }
+
+        for(int bx = x - RADIUS; bx <= x + RADIUS; bx++)
+        {
+            for(int bz = z - RADIUS; bz <= z + RADIUS; bz++)
+            {
+                by = AETHER.getHighestBlockAt(bx, bz).getLocation().getBlockY();
+                if (by > AetherAmbients.MIN_AETHER_BLOCK) {
+                    exitLocation = new Location(AETHER, bx, by, bz);
+                    return exitLocation;
+                }
+            }
+        }
+
+        exitLocation = new Location(AETHER, x, AETHER.getHighestBlockYAt(x, z), z);
+
+        for (int bx = exitLocation.getBlockX() - 2; bx <= exitLocation.getBlockX() + 2; bx ++) {
+            for (int bz = exitLocation.getBlockZ() - 2; bz <= exitLocation.getBlockZ() + 2; bz ++) {
+                AETHER.getBlockAt(bx, 100, bz).setType(Material.GLOWSTONE);
+            }
+        }
+
+        return exitLocation;
+
+
+    }
+
+    public static int PORTAL_TELEPORT_Y = 10000;
+    private static void setPortalBlock(Block block, Location exitLocation) {
+        block.setType(Material.END_GATEWAY);
+        EndGateway portal = (EndGateway) block.getState();
+        exitLocation.setY(PORTAL_TELEPORT_Y);
+        exitLocation.setWorld(Bukkit.getWorld("world"));
+        portal.setExitLocation(exitLocation);
+        portal.setExactTeleport(true);
+        portal.update();
+    }
+
+
+    @EventHandler
+    public static void onGatewayUpdate(BlockBreakEvent event) {
+        Block block = event.getBlock();
+
+        if (block.getType().equals(Material.END_GATEWAY) || block.getType().equals(Material.GLOWSTONE)){
+            breakCollindantGateway(block);
+        }
+    }
+
+    private static void breakCollindantGateway(Block block) {
+        for (BlockFace face : TagTactica.COLLINDANT_BLOCK_FACES) {
+            if (block.getRelative(face).getType().equals(Material.END_GATEWAY)) {
+                block.getRelative(face).breakNaturally();
+                breakCollindantGateway(block.getRelative(face));
+            }
+        }
     }
 
     enum Axis {

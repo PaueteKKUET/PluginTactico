@@ -1,4 +1,4 @@
-package com.fadedbytes.PluginTactico.misc.DiveoTactico;
+package com.fadedbytes.PluginTactico.gameplay.DiveoTactico;
 
 import com.fadedbytes.PluginTactico.PluginTactico;
 import com.fadedbytes.PluginTactico.util.ChatUtils;

@@ -10,3 +10,6 @@ commands:
   handtool:
     description: Instamina bloques :D
     usage: /<command>
+  gamemode:
+    description: Gamemode, namás
+    usage: /<command>

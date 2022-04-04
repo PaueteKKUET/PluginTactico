@@ -35,7 +35,7 @@ public class ChatUtilities implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public static void onPlayer(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!PlayerUtils.checkPermission(player, "tactico.chat.format")) return;
+        //if (!PlayerUtils.checkPermission(player, "tactico.chat.format")) return;
 
 //        PAUETE.sendMessage("mensaje :D");
         String message = event.getMessage();
@@ -44,6 +44,7 @@ public class ChatUtilities implements Listener {
 
     private static String formatMessage(final String message) {
         String formattedMessage = message;
+        formattedMessage = setRainbow(message);
         formattedMessage = setFadedColors(formattedMessage);
         formattedMessage = setComplexColors(formattedMessage);
         formattedMessage = setSimpleColors(formattedMessage);
@@ -158,5 +159,16 @@ public class ChatUtilities implements Listener {
 
         return message;
 
+    }
+
+    private static final String RAINBOW_PREFIX = "!!";
+    private static final String COLOR_START = "#0000ff";
+    private static final String COLOR_END = "#ff0000";
+    public static String setRainbow(String message) {
+        if (message.startsWith(RAINBOW_PREFIX)) {
+            return "::" + COLOR_START + ">" + message.replaceFirst(RAINBOW_PREFIX, "") + "<" + COLOR_END;
+        } else {
+            return message;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.fadedbytes.PluginTactico.util;
+package com.fadedbytes.PluginTactico.util.worldutils;
 
 import com.fadedbytes.PluginTactico.util.playerutils.PlayerUtils;
 import org.bukkit.Location;
